@@ -122,7 +122,12 @@ class SimpleSettingFactory:
         try:
             view = self.create_view(context)
         except TypeError:
-            view = self.create_view()
+            # exteraGram-style UItemFactory signature:
+            # create_view(context, list_view, currentAccount, classGuid, resourcesProvider)
+            try:
+                view = self.create_view(context, None, 0, 0, None)
+            except TypeError:
+                view = self.create_view()
         if view is None:
             return None
         if callable(self.bind_view):
@@ -130,10 +135,14 @@ class SimpleSettingFactory:
             try:
                 self.bind_view(view, item, divider)
             except TypeError:
+                # exteraGram-style: bind_view(view, item, divider, adapter, listView)
                 try:
-                    self.bind_view(view)
+                    self.bind_view(view, item, divider, None, None)
                 except TypeError:
-                    pass
+                    try:
+                        self.bind_view(view)
+                    except TypeError:
+                        pass
         return view
 
     @property

@@ -162,6 +162,13 @@ _PYTHON_SUBSTITUTES = {
 def substitute(name):
     if not isinstance(name, str):
         return None
+    # Подмена существует только для имён exteraGram. Обратный разбор ниже
+    # мапит "com.exteragram.messenger.plugins.models.PluginItemFactory" на
+    # app.exteraless.plugins.models.PluginItemFactory, поэтому без этого
+    # guard'а SDK-внутренний jclass того же самого Java-класса получал бы
+    # питоновский SimpleSettingFactory и падал на .getInstance().
+    if name.startswith("app.exteraless."):
+        return None
     target = _PYTHON_SUBSTITUTES.get(name)
     if target is None:
         for source, value in _PYTHON_SUBSTITUTES.items():
