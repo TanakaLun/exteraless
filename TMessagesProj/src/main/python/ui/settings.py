@@ -160,6 +160,17 @@ class SimpleSettingFactory:
         return jclass("app.exteraless.plugins.models.PluginItemFactory").create(
             self, factory_args or None)
 
+    @classmethod
+    def getInstance(cls):
+        """exteraGram legacy entry point: PluginItemFactory.getInstance()."""
+        from java import jclass
+        return jclass("app.exteraless.plugins.models.PluginItemFactory").getInstance()
+
+    @classmethod
+    def create(cls, factory=None, factory_args=None):
+        """exteraGram legacy static form: PluginItemFactory.create(pyFactory, args)."""
+        return cls.getInstance().create(factory, factory_args)
+
     def __call__(self, *factory_args, link_alias: Optional[str] = None) -> Custom:
         """Factory(link_alias="x") or Factory(*factory_args) -> Custom(...)."""
         return Custom(factory=self,
