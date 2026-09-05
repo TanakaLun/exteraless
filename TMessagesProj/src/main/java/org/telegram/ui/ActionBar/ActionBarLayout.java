@@ -1839,8 +1839,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         // applyPredictiveBackProgress напрямую, иначе множитель наложился бы дважды
         t = app.exteraless.utils.UtilsConfig.adjustPredictiveBackProgress(t);
         if (NaConfig.INSTANCE.getBackAnimationStyle().Int() == BACK_ANIMATION_SLIDE) {
-            final float dx = containerView.getMeasuredWidth()
-                    * CubicBezierInterpolator.StandardDecelerate.getInterpolation(t);
+            final float dx = containerView.getMeasuredWidth() * t;
             predictiveBackHasProgress = t > 0;
             containerView.setTranslationX(dx);
             setInnerTranslationX(dx);
