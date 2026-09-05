@@ -52,6 +52,7 @@ import android.view.Window;
 import android.view.WindowInsets;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
@@ -1838,7 +1839,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         // applyPredictiveBackProgress напрямую, иначе множитель наложился бы дважды
         t = app.exteraless.utils.UtilsConfig.adjustPredictiveBackProgress(t);
         if (NaConfig.INSTANCE.getBackAnimationStyle().Int() == BACK_ANIMATION_SLIDE) {
-            final float dx = dp(180) * CubicBezierInterpolator.StandardDecelerate.getInterpolation(t);
+            final float dx = containerView.getMeasuredWidth() * t;
             predictiveBackHasProgress = t > 0;
             containerView.setTranslationX(dx);
             setInnerTranslationX(dx);
@@ -1958,7 +1959,11 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                     ObjectAnimator.ofFloat(this, "innerTranslationX", (float) containerView.getMeasuredWidth()).setDuration(duration)
                 );
                 if (newBackTransitions()) {
-                    animatorSet.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
+                    if (NaConfig.INSTANCE.getBackAnimationStyle().Int() == BACK_ANIMATION_SLIDE) {
+                        animatorSet.setInterpolator(SLIDE_BACK_COMMIT_INTERPOLATOR);
+                    } else {
+                        animatorSet.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
+                    }
                 }
             }
         } else {
@@ -4163,6 +4168,8 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
     public static final int BACK_ANIMATION_SPRING = 1;
     public static final int BACK_ANIMATION_PREDICTIVE = 2;
     public static final int BACK_ANIMATION_SLIDE = 3;
+    private static final Interpolator SLIDE_BACK_COMMIT_INTERPOLATOR =
+            new CubicBezierInterpolator(0.4f, 0.0f, 0.2f, 1.0f);
     private static final boolean USE_SPRING_ANIMATION = NaConfig.INSTANCE.getBackAnimationStyle().Int() == BACK_ANIMATION_SPRING;
     private static final boolean USE_ACTIONBAR_CROSSFADE = USE_SPRING_ANIMATION && NaConfig.INSTANCE.getSpringAnimationCrossfade().Bool();
     private static final float SPRING_STIFFNESS = 900f;
